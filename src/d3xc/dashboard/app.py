@@ -180,7 +180,7 @@ def main():
     genders = sorted(results["gender"].dropna().unique().tolist())
     conferences = sorted(results["conference"].dropna().unique().tolist())
 
-    views = ["Coach Mode", "LacTiC (predictive)", "Statistics",
+    views = ["Coach Mode", "📖 How it works", "LacTiC (predictive)", "Statistics",
              "Coaching & Dynamics", "National", "Standardized (VDOT)", "Scenario",
              "LacTiC Rankings", "Team development", "Most improved", "Conference",
              "Regional & National", "HS → College"]
@@ -217,6 +217,8 @@ def main():
 
     if view == "Coach Mode":
         render_coach(gender)
+    elif view == "📖 How it works":
+        render_readme()
     elif view == "Team development":
         render_team_development(r_g, p_g, coaches, gender)
     elif view == "Most improved":
@@ -953,6 +955,21 @@ def render_coach(gender):
                "head-to-head matchups), and the national-qualifying line checks out "
                "two independent ways.")
 
+    with st.expander("❓ New here? How to read this page (30-second guide)", expanded=True):
+        st.markdown(
+            "This page has four parts, top to bottom:\n\n"
+            "1. **Where your program stands today** — your team at the end of the "
+            "2025 season (your starting point heading into 2026): a fitness score, "
+            "your place in the conference, and your incoming recruiting class.\n"
+            "2. **Your two goals** — the fitness level (shown as a real race time) "
+            "your top‑5 need to **win your conference** and to **qualify for nationals**.\n"
+            "3. **Adjust your plan** — two sliders: how much *faster you recruit* and "
+            "how much your runners *improve each year*. Drag them and watch the graph "
+            "and goals update.\n"
+            "4. **What to do** — plain recommendations to reach each goal.\n\n"
+            "**Fitness score = VDOT; higher is fitter.** Want the full walkthrough? "
+            "Pick **📖 How it works** in the left sidebar.")
+
     proj, prep, frames = get_team_projection(), get_prep(), get_frames()
     teams = sorted(proj[proj.gender == gender]["team"].unique().tolist())
     if not teams:
@@ -967,7 +984,8 @@ def render_coach(gender):
     conf, cur_arr = row["conference"], float(row["arrival_vdot"])
 
     # ---- where you stand right now (2025) ----
-    st.markdown("### 📍 Where you stand right now (2025)")
+    st.markdown("### 📍 Where your program stands today")
+    st.caption("End of the 2025 season — your starting point heading into 2026.")
     cur_conf = (proj[(proj.conference == conf) & (proj.gender == gender)]
                 .sort_values("cur_vdot", ascending=False).reset_index(drop=True))
     rank = int(cur_conf.index[cur_conf.team == team][0]) + 1
@@ -1026,11 +1044,16 @@ def render_coach(gender):
     if title_bar:
         dfp[f"Beat {conf} favorite"] = [(title_bar[y] - QUAL) * SPV for y in years]
     dfp["Qualify line"] = 0.0
+    st.markdown("### 📈 Your projection, 2026–2029")
     long = dfp.melt("season", var_name="series", value_name="sec")
     fig = px.line(long, x="season", y="sec", color="series", markers=True)
     fig.update_yaxes(title="seconds per runner from qualifying (0 = you'd qualify)")
     fig.update_xaxes(title="season", dtick=1, tickformat="d")
     st.plotly_chart(fig, use_container_width=True)
+    st.caption("Each line is your top‑5 average. The **0 line = the national‑"
+               "qualifying level**; higher is fitter. **‘If nothing changes’** is your "
+               "current path; **‘Your plan’** reflects the sliders above. The dashed "
+               "conference line is the level needed to win your league.")
 
     fin = scen[2029]
     st.markdown("### Where your plan gets you (by 2029)")
@@ -1062,6 +1085,79 @@ def render_coach(gender):
     st.caption("“If nothing changes” = your current recruiting + training rates. The "
                "recruiting numbers are approximate until high-school times are added; "
                "the goal times and the trend are measured from real meets.")
+
+
+def render_readme():
+    st.title("📖 How it works")
+    st.markdown(
+        "A plain‑language guide — **no math or stats background needed.** "
+        "This tool helps you see where your cross country program stands and what "
+        "it would take to **win your conference** and **qualify for nationals** over "
+        "the next few years.")
+
+    st.success("**Why trust it?** Its fitness ratings agreed with your **actual "
+               "conference finishes 90% of the time** over the last decade (1,172 of "
+               "1,304 team head‑to‑head matchups), and the national‑qualifying line "
+               "was confirmed two independent ways.")
+
+    st.subheader("Start here: the Coach Mode page")
+    st.markdown(
+        "**Coach Mode** (top of the sidebar) is the main page. It reads top to bottom:\n\n"
+        "1. **Where your program stands today** — your team as of the end of the 2025 "
+        "season, i.e. your starting point heading into 2026. You'll see a fitness "
+        "score, your rank in the conference, and your incoming recruiting class.\n"
+        "2. **Your two goals** — the fitness level (shown as a real race time) your "
+        "top‑5 need to *win your conference* and to *qualify for nationals*.\n"
+        "3. **Adjust your plan** — two sliders let you test *what if we recruit a bit "
+        "faster* and *what if our runners improve a bit more each year*. Everything "
+        "updates live.\n"
+        "4. **What to do** — a plain recommendation for reaching each goal.")
+
+    st.subheader("What the numbers mean")
+    st.markdown(
+        "- **Fitness score (VDOT):** one number for how fit a team is, that works "
+        "across different courses and race distances. **Higher = fitter.** We also "
+        "translate it into a real race time so it's tangible.\n"
+        "- **Qualify for nationals:** your top‑5 need to average about **25:27 for 8k "
+        "(men)** or **22:40 for 6k (women)** at the regional meet. That's the bar the "
+        "last qualifying team has hit.\n"
+        "- **Win your conference:** you need to beat the strongest projected team in "
+        "your league (for the NCAC that's currently John Carroll).\n"
+        "- **Recruiting number:** the fitness level your *incoming freshmen* arrive "
+        "at. **Development:** how much your athletes improve each year they're with you.")
+
+    st.subheader("How to read the projection graph")
+    st.markdown(
+        "- Each line is your **top‑5 average** over the next four seasons.\n"
+        "- The **0 line is the national‑qualifying level** — at or above it means you'd "
+        "qualify.\n"
+        "- **‘If nothing changes’** is your current path; **‘Your plan’** shows the "
+        "effect of the sliders; the **dashed conference line** is the level to win "
+        "your league.\n"
+        "- Lines often **dip in later years** — that just means your current seniors "
+        "graduate and, at today's recruiting, aren't fully replaced. That's the whole "
+        "point of the sliders: see what it takes to hold or climb.")
+
+    st.subheader("What it can and can't do")
+    st.markdown(
+        "- ✅ Good for **big‑picture planning**: how much recruiting and development it "
+        "takes to reach a goal.\n"
+        "- ⚠️ It's a **projection, not a prediction** — it assumes your recruiting and "
+        "training stay about the same *unless you move the sliders*.\n"
+        "- ⚠️ It doesn't know about **injuries, transfers, or specific athletes**, and "
+        "recruiting targets are **approximate** (they get sharper as we add more data).\n"
+        "- ⚠️ The women's data is **thinner** than the men's, so treat those numbers as "
+        "a rougher guide.")
+
+    st.subheader("The other tabs (optional, more detailed)")
+    st.markdown(
+        "The remaining sidebar views are deeper dives — conference standings, national "
+        "results, historical development, and the underlying ratings. **You don't need "
+        "them to use Coach Mode**; explore only if you're curious. Use the **Time "
+        "window** filter in the sidebar to focus those tables on the last 1/3/5 years.")
+
+    st.info("Ready? Pick **Coach Mode** at the top of the left sidebar and choose your "
+            "program.")
 
 
 if __name__ == "__main__":
