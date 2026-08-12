@@ -1,0 +1,22 @@
+# virtualenv / build / caches
+.venv/
+__pycache__/
+*.pyc
+dist/
+*.egg-info/
+
+# large scrape HTTP cache (564 MB) — NOT needed to run the app
+data/raw/
+data/processed/
+
+# secrets (set these in the host's dashboard, never commit)
+.streamlit/secrets.toml
+
+# local artifacts
+reports/*.html
+reports/*.pdf
+*.log
+.DS_Store
+
+# keep the prebuilt database (the app needs it):
+!data/d3xc.db

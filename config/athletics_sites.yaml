@@ -1,0 +1,22 @@
+# Athletics-site base URLs for roster/origin scraping (Sidearm layout).
+# Only teams listed here are scraped for athlete origin; others are skipped
+# until a verified base URL (and matching layout) is added. PrestoSports schools
+# (Muskingum, Defiance, Bluffton) use a different layout and are TODO.
+# sport paths are the Sidearm defaults: mens-cross-country / womens-cross-country
+sites:
+  Baldwin Wallace: "https://bwyellowjackets.com"
+  Capital: "https://athletics.capital.edu"
+  Case Western Reserve: "https://athletics.case.edu"
+  Denison: "https://denisonbigred.com"
+  Heidelberg: "https://bergathletics.com"
+  Hiram: "https://hiramterriers.com"
+  John Carroll: "https://jcusports.com"
+  Kenyon: "https://athletics.kenyon.edu"
+  Marietta: "https://pioneers.marietta.edu"
+  Mount St. Joseph: "https://msjlions.com"
+  Mount Union: "https://athletics.mountunion.edu"
+  Oberlin: "https://goyeo.com"
+  Ohio Wesleyan: "https://battlingbishops.com"
+  Otterbein: "https://otterbeincardinals.com"
+  Wilmington: "https://wilmingtonquakers.com"
+  Wooster: "https://woosterathletics.com"

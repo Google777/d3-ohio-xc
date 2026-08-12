@@ -1,0 +1,62 @@
+========================================================
+  D3 OHIO XC — COACH DASHBOARD  (beta)
+  Start here — takes about 2 minutes the first time
+========================================================
+
+  Prepared for: Kirk Shellhouse — Kenyon College
+  (Coach Mode opens on Kenyon men by default. A quick printed summary
+   for your program is included: "Kenyon_men_summary.html" — double-click
+   to open it in your browser, no setup needed.)
+
+
+WHAT THIS IS
+  An interactive tool to see where your program stands, project the
+  next 4 years, and answer "what do we need to do to win the conference
+  and qualify for nationals?" — in real race times, not jargon.
+
+
+ONE-TIME SETUP (only needed once, needs internet)
+  This app runs using Python. If it's not already on your computer:
+    • Go to  https://www.python.org/downloads/
+    • Download and install Python 3 (version 3.10, 3.11, or 3.12).
+    • WINDOWS ONLY: on the first install screen, CHECK the box
+      "Add Python to PATH". This matters!
+
+
+HOW TO LAUNCH IT
+  1) Unzip this folder somewhere easy (e.g. your Desktop).
+  2) Double-click the file for your computer:
+
+        Windows  ->  Start_Dashboard_Windows.bat
+        Mac      ->  Start_Dashboard_Mac.command
+        Linux    ->  Start_Dashboard_Linux.sh
+
+  3) A black setup window opens. The FIRST time, it spends ~1 minute
+     getting ready. Then your web browser opens to the dashboard.
+     (Every launch after that is quick.)
+
+  4) Start on the "Coach Mode" tab. Pick your program, slide the
+     Recruiting and Training controls, and read "What to do."
+
+  TO STOP: just close the black window.
+
+
+IF DOUBLE-CLICK DOESN'T WORK
+  • Mac: right-click the .command file -> Open -> Open (approves it once).
+    If it says "permission denied," open Terminal in this folder and run:
+        chmod +x Start_Dashboard_Mac.command
+  • Windows: if SmartScreen warns, click "More info" -> "Run anyway".
+  • Any system: if it says Python wasn't found, do the ONE-TIME SETUP above.
+
+
+WHAT WE'D LOVE FEEDBACK ON
+  • Are the numbers believable for your program?
+  • Is "Coach Mode" clear without any explanation?
+  • What would make it more useful for recruiting/training decisions?
+  • Anything confusing, broken, or missing?
+
+  Send notes back by simply REPLYING to the email that sent you this
+  package (there's also a short FEEDBACK.txt you can fill in and attach).
+
+  (This is an early beta running on your own computer — nothing is
+   uploaded anywhere. Once it's dialed in, we'll host it at a web link.)

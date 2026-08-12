@@ -1,0 +1,126 @@
+# Ohio NCAA Division III cross country programs.
+# All compete into NCAA D3 Region VI (Great Lakes) for regional/national qualifying.
+#
+# tfrrs_slug: TFRRS uses team URLs of the form
+#   https://www.tfrrs.org/teams/xc/<slug>_m_<Name>.html  (men)
+#   https://www.tfrrs.org/teams/xc/<slug>_f_<Name>.html  (women)
+# The slugs below are BEST-EFFORT and flagged `verified: false` until a live
+# resolve confirms them (see scripts/resolve_slugs.py). Do NOT trust unverified
+# slugs for a full scrape without checking.
+
+region: "Region VI - Great Lakes"
+division: "NCAA Division III"
+
+conferences:
+  OAC: "Ohio Athletic Conference"
+  NCAC: "North Coast Athletic Conference"
+  HCAC: "Heartland Collegiate Athletic Conference"
+  UAA: "University Athletic Association"
+  PAC: "Presidents' Athletic Conference"
+
+teams:
+  # ---- Ohio Athletic Conference (OAC) ----
+  - name: "Baldwin Wallace"
+    conference: OAC
+    tfrrs_slug: "OH_college_Baldwin_Wallace"
+    verified: false
+  - name: "Capital"
+    conference: OAC
+    tfrrs_slug: "OH_college_Capital"
+    verified: false
+  - name: "Heidelberg"
+    conference: OAC
+    tfrrs_slug: "OH_college_Heidelberg"
+    verified: false
+  - name: "John Carroll"
+    conference: NCAC   # moved from OAC to NCAC effective 2025-26
+    tfrrs_slug: "OH_college_John_Carroll"
+    verified: false
+  - name: "Marietta"
+    conference: OAC
+    tfrrs_slug: "OH_college_Marietta"
+    verified: false
+  - name: "Mount Union"
+    conference: OAC
+    tfrrs_slug: "OH_college_Mount_Union"
+    verified: false
+  - name: "Muskingum"
+    conference: OAC
+    tfrrs_slug: "OH_college_Muskingum"
+    verified: false
+  - name: "Ohio Northern"
+    conference: OAC
+    tfrrs_slug: "OH_college_Ohio_Northern"
+    verified: false
+  - name: "Otterbein"
+    conference: OAC
+    tfrrs_slug: "OH_college_Otterbein"
+    verified: false
+  - name: "Wilmington"
+    conference: OAC
+    tfrrs_slug: "OH_college_Wilmington"
+    verified: false
+
+  # ---- North Coast Athletic Conference (NCAC) ----
+  - name: "Denison"
+    conference: NCAC
+    tfrrs_slug: "OH_college_Denison"
+    verified: false
+  - name: "Hiram"
+    conference: PAC   # left NCAC for the PAC effective 2025-26
+    tfrrs_slug: "OH_college_Hiram"
+    verified: false
+  - name: "Kenyon"
+    conference: NCAC
+    tfrrs_slug: "OH_college_Kenyon"
+    verified: false
+  - name: "Oberlin"
+    conference: NCAC
+    tfrrs_slug: "OH_college_Oberlin"
+    verified: false
+  - name: "Ohio Wesleyan"
+    conference: NCAC
+    tfrrs_slug: "OH_college_Ohio_Wesleyan"
+    verified: false
+  - name: "Wittenberg"
+    conference: NCAC
+    tfrrs_slug: "OH_college_Wittenberg"
+    verified: false
+  - name: "Wooster"
+    conference: NCAC
+    tfrrs_slug: "OH_college_Wooster"
+    verified: false
+
+  # ---- NCAC non-Ohio members (included for full-conference analysis) ----
+  - name: "Allegheny"
+    conference: PAC   # rejoined the PAC in 2022 (no longer NCAC)
+    tfrrs_slug: "PA_college_Allegheny"
+    verified: false
+  - name: "DePauw"
+    conference: NCAC
+    tfrrs_slug: "IN_college_DePauw"
+    verified: false
+  - name: "Wabash"
+    conference: NCAC
+    tfrrs_slug: "IN_college_Wabash"
+    verified: false
+
+  # ---- Heartland Collegiate Athletic Conference (HCAC, Ohio members) ----
+  - name: "Bluffton"
+    conference: HCAC
+    tfrrs_slug: "OH_college_Bluffton"
+    verified: false
+  - name: "Defiance"
+    conference: HCAC
+    tfrrs_slug: "OH_college_Defiance"
+    verified: false
+  - name: "Mount St. Joseph"
+    conference: HCAC
+    tfrrs_slug: "OH_college_Mount_St_Joseph"
+    verified: false
+
+  # ---- University Athletic Association (UAA) ----
+  - name: "Case Western Reserve"
+    conference: UAA
+    tfrrs_slug: "OH_college_Case_Western_Reserve"
+    verified: false

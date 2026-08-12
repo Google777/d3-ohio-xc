@@ -1,0 +1,16 @@
+# Curated high-school marks for incoming college athletes.
+#
+# WHY CURATED: Athletic.net (the structured HS-times source) blocks automated
+# access (HTTP 403), MileSplit is paywalled, and college roster bios carry HS
+# *context* but rarely numeric HS PRs. So HS marks are entered by hand from
+# public sources (Athletic.net via browser, OHSAA state-meet results, recruiting
+# announcements). Each row links to a college athlete already in the DB by
+# exact name + team + gender, so links are definitive (confidence 1.0).
+#
+# event: 3200m | 1600m | 5000m | 5k (XC) | 3.1M   (used to derive pace)
+# mark : time as MM:SS.s  (e.g. 9:35.2)  OR seconds
+# hs_grad_year: HS graduation year (their first college season is usually +0/+1)
+#
+# Fill rows below the header; the HS->College view and metrics.hs_to_college
+# activate automatically once populated.
+athlete_name,college_team,gender,event,mark,hs_grad_year,source
