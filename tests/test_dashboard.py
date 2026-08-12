@@ -19,10 +19,10 @@ pytestmark = pytest.mark.skipif(
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-VIEWS = ["Coach Mode", "📖 How it works", "LacTiC (predictive)", "Statistics",
-         "Coaching & Dynamics", "National", "Standardized (VDOT)", "Scenario",
-         "LacTiC Rankings", "Team development", "Most improved", "Conference",
-         "Regional & National", "HS → College"]
+VIEWS = ["Coach Mode", "📖 How it works", "🔬 Validation & Methods",
+         "LacTiC (predictive)", "Statistics", "Coaching & Dynamics", "National",
+         "Standardized (VDOT)", "Scenario", "LacTiC Rankings", "Team development",
+         "Most improved", "Conference", "Regional & National", "HS → College"]
 
 _RUNNER = """
 import sys
