@@ -133,6 +133,19 @@ def add_coaching_overlays(fig: go.Figure, coaches_df: pd.DataFrame):
         )
 
 
+def explain(body, label="What am I looking at?"):
+    """Consistent, unobtrusive plain-language explainer for advanced charts."""
+    with st.expander(f"ℹ️ {label}"):
+        st.markdown(body)
+
+
+def section(title, subtitle=None):
+    """Consistent section header for the advanced views."""
+    st.markdown(f"#### {title}")
+    if subtitle:
+        st.caption(subtitle)
+
+
 def _gate():
     """Optional password gate. Active ONLY if 'app_password' is set in Streamlit
     secrets (i.e. on the hosted deployment). Local runs and the offline zip stay
@@ -437,6 +450,12 @@ def render_lactic(gender, conf_filter):
         "development model is gradient-boosted and flags athletes who beat their "
         "projected pace."
     )
+    explain(
+        "**Plain version:** every runner gets one **rating** (higher = faster) that's "
+        "been *fairness‑adjusted* — we account for tough courses and strong fields so "
+        "a time on a hard course isn't unfairly penalized. **Program tiers** group "
+        "teams by how strong they are now and whether they're trending up. The "
+        "**development** tab flags athletes improving faster than expected.")
     ar = get_ratings()
     strength, tiers = get_programs()
     proj = get_projection()
@@ -566,6 +585,15 @@ def render_lactic_predictive(gender, conf_filter):
         "pairwise accuracy). Elo = head-to-head (best for team outcomes). All "
         "metrics below are from a temporal holdout — no peeking at the future."
     )
+    explain(
+        "**Plain version:** these ratings are built to *predict the next race*, and we "
+        "checked them by hiding recent results to see if they'd have called the "
+        "outcome.\n"
+        "- **PacePower** = a runner's recent form, weighted toward their latest races "
+        "— our best single predictor (right ~87% of the time when picking the faster "
+        "of any two runners).\n"
+        "- **Elo** = a head‑to‑head score, like chess rankings — best for predicting "
+        "which *team* beats which.")
     frames = get_frames()
     team_conf = frames["teams"].set_index("name")["conference"].to_dict()
     pp = get_pace_power()
@@ -646,13 +674,22 @@ def render_lactic_predictive(gender, conf_filter):
 
 
 def render_statistics(gender):
-    st.subheader("Statistics — development, balance, realignment")
+    st.subheader("Statistics — development, balance & realignment")
+    st.caption("Ten-year trends across all tracked programs: who's rising, who "
+               "develops talent, how steady they are, and how conference realignment "
+               "reshaped the leagues.")
     frames = get_frames()
     traj = lstats.program_trajectories(frames)
     tg = traj[traj["gender"] == gender].dropna(subset=["reg_slope_place_per_yr"])
 
-    st.markdown("**Program development** — regional places gained per year "
-                "(negative = rising). Bars shaded by statistical significance.")
+    section("Which programs are trending up at the regional?",
+            "Average change in regional finishing place per year over the last decade.")
+    explain(
+        "Each bar is how a team's **regional finish** has moved per year. "
+        "**Left / negative = climbing** (finishing higher every year); right = "
+        "sliding. **Darker blue** bars are statistically solid — unlikely to be luck. "
+        "**Faint gray** bars are 'not significant': a trend too small or too noisy to "
+        "bank on yet.")
     tg = tg.sort_values("reg_slope_place_per_yr")
     tg["significant"] = np.where(tg["reg_p"] < 0.05, "p < 0.05", "n.s.")
     fig = px.bar(tg, x="reg_slope_place_per_yr", y="team", color="significant",
@@ -681,8 +718,14 @@ def render_statistics(gender):
         st.caption("NCAC Ohio men — mean placement 2025 vs 2021–24 (+ = pushed down after JCU joined)")
         st.dataframe(shift.sort_values("delta_places"), use_container_width=True, hide_index=True)
 
-    st.markdown("**Program development effect** — improvement beyond arrival "
-                "caliber (regression-controlled; the HS→college pipeline signal)")
+    section("Which programs develop talent the most?",
+            "How much runners improve beyond what their arrival level alone would predict.")
+    explain(
+        "This strips out *how good recruits were when they arrived* and measures the "
+        "**extra** improvement a program adds on top. **Green / more negative = the "
+        "program makes runners faster than their recruiting profile alone would "
+        "suggest** — a fingerprint of strong development and coaching, not just "
+        "landing fast recruits.")
     from d3xc.analyze import development as D
     eff = D.program_development_effect(frames["results"])
     eff = eff[eff["gender"] == gender].sort_values("dev_effect_s")
@@ -700,10 +743,17 @@ def render_statistics(gender):
         st.dataframe(ctg[["transition", "n", "mean_improve_s", "median_improve_s"]].round(1),
                      use_container_width=True, hide_index=True)
 
-    st.markdown("**Program development — 3-yr rolling: steadiness vs swing**")
-    st.caption("X = smoothed change in top-5 time (← faster/improving). Y = avg "
-               "year-to-year swing (volatility). Bottom-left = steady, real risers; "
-               "high Y = too swingy to trust single seasons.")
+    section("Steady improvers vs boom-or-bust programs (3-yr view)",
+            "Are a team's gains real and steady, or just noisy season-to-season swings?")
+    explain(
+        "Every dot is a program. **Left = improving** (top‑5 getting faster over three "
+        "years). **Higher up = more ‘volatility’.**\n\n"
+        "**What ‘volatility’ means, plainly:** how much a team's times bounce around "
+        "from one season to the next. A **low** team is consistent — one season "
+        "reliably reflects the program. A **high** team is boom‑or‑bust: a great year "
+        "might be a fluke (or a bad year might be), often because a small roster leans "
+        "on one or two stars. **Bottom‑left is the sweet spot: steady, genuine "
+        "risers** you can trust.")
     rc = lstats.rolling_change(frames, window=3)
     rcg = rc[rc["gender"] == gender].dropna(subset=["roll_time_change_s", "mean_yoy_swing_s"])
     if not rcg.empty:
@@ -733,15 +783,29 @@ def render_statistics(gender):
 
 def render_coaching(gender):
     st.subheader("Coaching & Dynamics")
-    st.caption("Descriptive & correlational — confounded by graduation cohorts, "
-               "small rosters, the 2020 gap, and 2024 changes being too recent. "
-               "Read the 5-yr rate as the stable trend.")
+    st.caption("Does a coaching change actually move the needle? These views try to "
+               "separate a real coaching effect from things that would have happened "
+               "anyway — graduating stars, small rosters, and the 2020 gap.")
     acc, ce, did = get_coaching()
 
-    st.markdown("**Airtight coaching‑change effect — within‑athlete DiD + placebo "
-                "pre‑trend test** (returners vs stable‑coach controls; 90% bootstrap "
-                "CI). DiD<0 = ran faster than comparable returners elsewhere. Bars "
-                "green only if they pass the placebo (parallel trends hold).")
+    section("Did a coaching change actually make runners faster?",
+            "Comparing a program's returning runners before vs after a new coach, "
+            "against similar runners at programs that did NOT change coaches.")
+    explain(
+        "**The plain version:** we take the runners who stayed through a coaching "
+        "change and ask — *did they improve more than comparable runners elsewhere "
+        "who kept the same coach?* That difference is the bar length. Left / negative "
+        "= they got faster than expected, a possible coaching effect.\n\n"
+        "**Why the colors matter:** a program might *already* have been rising before "
+        "the new coach arrived. So we run a fake ‘placebo’ change on the years "
+        "**before** the real one. If that fake test also shows improvement, the "
+        "program was already trending and we can't credit the coach — that bar turns "
+        "**red (suspect)**. Bars are **green (credible)** only when the before‑period "
+        "was flat and the after‑period jumped. **Blue** = a real jump we couldn't "
+        "fully placebo‑test. The whiskers show the uncertainty range.\n\n"
+        "**Bottom line in our data:** only *Kenyon women (2020)* comes out clean‑"
+        "green — most apparent 'coaching effects' are really just star classes "
+        "graduating in or out.")
     dg = did[(did["gender"] == gender) & did["sufficient"]].sort_values("did_s")
     if dg.empty:
         st.info("No sufficiently-powered changes for this gender.")
@@ -772,8 +836,13 @@ def render_coaching(gender):
                    "program was already trending, so the real DiD isn't causal — "
                    "e.g., John Carroll/Fuelling. Only Kenyon women 2020 passes clean.")
 
-    st.markdown("**Improvement acceleration** — 2‑yr vs 10‑yr rate of top‑5 time "
-                "(negative = improvement accelerating recently)")
+    section("Is the program improving faster lately, or slowing down?",
+            "Recent pace of improvement (last 2 years) vs the long‑run pace (10 years).")
+    explain(
+        "We measure how fast a team's top‑5 time is dropping recently versus over the "
+        "long haul. A **negative** bar means improvement is **accelerating** — the "
+        "program is getting better faster than its own history. A positive bar means "
+        "it's cooling off. Think of it as the program's momentum.")
     ag = acc[acc["gender"] == gender].dropna(subset=["accel_2v10"]).sort_values("accel_2v10")
     if not ag.empty:
         fig = px.bar(ag, x="accel_2v10", y="team", orientation="h",
@@ -785,8 +854,16 @@ def render_coaching(gender):
         st.dataframe(ag[["team", "rate_10yr", "rate_5yr", "rate_2yr", "accel_2v10"]].round(1),
                      use_container_width=True, hide_index=True)
 
-    st.markdown("**Coaching‑change event study (±3 seasons)** — `d_top5_s`<0 = "
-                "faster after; `d_regional`<0 = better; `d_oos_pct`>0 = more national")
+    section("Before-and-after snapshot of each coaching change (±3 seasons)",
+            "A simpler side-by-side: what changed in the 3 years after a new coach vs the 3 before.")
+    explain(
+        "This is the quick, descriptive look (not the rigorous test above). For each "
+        "coaching change we compare the 3 seasons before and after:\n"
+        "- **Δ top‑5 time** — negative means the scoring five got faster.\n"
+        "- **Δ regional** — negative means a better regional finish.\n"
+        "- **Δ % out‑of‑state** — positive means recruiting reached more nationally.\n\n"
+        "Treat this as *what happened around the change*, not proof the coach caused "
+        "it — the greener analysis above is the one that controls for that.")
     ceg = ce[ce["gender"] == gender].sort_values("change_year")
     if ceg.empty:
         st.info("No coaching changes with data for this gender.")
@@ -844,6 +921,12 @@ def render_national(gender):
 
 def render_standardized(gender):
     st.subheader("Standardized — course- & distance-neutral VDOT")
+    explain(
+        "**Plain version:** cross country times aren't comparable across meets — "
+        "courses and distances differ. **VDOT** converts any race (5k, 6k, 8k) into "
+        "one fitness number, and we further adjust for how hard each course ran, so "
+        "you can compare teams apples‑to‑apples. Higher = fitter. Treat it as a "
+        "relative yardstick — the gaps between teams matter more than the exact number.")
     st.caption("Every performance → VDOT (fixes varying length), then course-"
                "adjusted to a championship-course reference. Reliable within the "
                "conference circuit; national meet excluded (under-identified).")
