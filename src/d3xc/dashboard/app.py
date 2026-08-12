@@ -18,6 +18,14 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import plotly.io as pio
+
+# ---- consistent, professional chart styling across the whole app ----
+pio.templates.default = "plotly_white"
+px.defaults.template = "plotly_white"
+BRAND_SEQ = ["#2c7fb8", "#1b9e77", "#d95f02", "#7570b3",
+             "#e7298a", "#66a61e", "#a6761d", "#e6ab02"]
+px.defaults.color_discrete_sequence = BRAND_SEQ
 import streamlit as st
 
 from d3xc import config
@@ -272,6 +280,16 @@ def render_team_development(results, placements, coaches, gender):
     if not teams:
         st.info("No data for this selection.")
         return
+    section("Team development over time",
+            "One program's scoring average, pack spread, and championship finishes across seasons.")
+    explain(
+        "Pick a program to see its trajectory season by season.\n"
+        "- **Scoring average** = the average time of the top‑5 runners; on these charts "
+        "**up = faster**.\n"
+        "- **1–5 pack spread** = the gap from the #1 to #5 runner; smaller = a tighter, "
+        "more reliable pack.\n"
+        "- **Shaded color bands** mark each **head coach's tenure**, so you can see how "
+        "the team changed under different coaches.")
     prev = st.session_state.get("td_team_sel")
     idx = teams.index(prev) if prev in teams else 0
     team = st.selectbox("Team", teams, index=idx)
@@ -340,7 +358,13 @@ def render_team_development(results, placements, coaches, gender):
 
 
 def render_most_improved(results, placements):
-    st.subheader("Most improved athletes (debut season → career best)")
+    section("Most improved athletes",
+            "Biggest gains from a runner's debut season to their career best.")
+    explain(
+        "We compare each athlete's **first-season time** to their **best-ever time** "
+        "and rank by how much they dropped. It surfaces who developed most during "
+        "college — a mix of coaching, training, and years in the program. Hover a bar "
+        "for their debut and best times.")
     mi = m.most_improved_athletes(results)
     if mi.empty:
         st.info("Need athletes with ≥2 seasons of data.")
@@ -361,7 +385,8 @@ def render_most_improved(results, placements):
             use_container_width=True, hide_index=True,
         )
 
-    st.subheader("Most improved teams (regional placement gained)")
+    section("Most improved teams",
+            "Programs that climbed the most places at the regional over time.")
     mt = m.most_improved_teams(placements, "regional")
     if mt.empty:
         st.info("Need teams with ≥2 seasons of regional placements.")
@@ -370,7 +395,8 @@ def render_most_improved(results, placements):
 
 
 def render_conference(placements):
-    st.subheader("Conference titles")
+    section("Conference titles",
+            "Total conference championships won by each program in the selected window.")
     cw = m.conference_wins(placements)
     if cw.empty:
         st.info("No conference wins in the selection.")
@@ -380,7 +406,8 @@ def render_conference(placements):
         fig.update_layout(height=550)
         st.plotly_chart(fig, use_container_width=True)
 
-    st.subheader("Conference placement trend")
+    section("Conference finish over time",
+            "Where each team placed at the conference meet, season by season (1 = win).")
     tr = m.placement_trend(placements, "conference")
     if tr.empty:
         st.info("No conference placement data.")
@@ -391,7 +418,12 @@ def render_conference(placements):
 
 
 def render_regional_national(placements):
-    st.subheader("Great Lakes Regional placement")
+    section("Great Lakes Regional finish over time",
+            "Regional placement by season (1 = best).")
+    explain(
+        "The regional meet is the gateway to nationals — the top teams here earn the "
+        "bids. Lower on the chart = a better finish. This is where our qualifying bar "
+        "comes from: the level the last qualifying team had to hit.")
     tr = m.placement_trend(placements, "regional")
     if tr.empty:
         st.info("No regional placement data.")
@@ -400,7 +432,8 @@ def render_regional_national(placements):
         fig.update_yaxes(autorange="reversed", title="regional place (1 = best)")
         st.plotly_chart(fig, use_container_width=True)
 
-    st.subheader("NCAA Championships qualifiers & finish")
+    section("NCAA Championships — who made it and how they finished",
+            "Each dot is a national appearance; bubble size = team points, lower place = better.")
     nat = m.placement_trend(placements, "national")
     if nat.empty:
         st.info("No national-meet appearances in the selection.")
@@ -417,11 +450,14 @@ def render_regional_national(placements):
 
 
 def render_hs_to_college(results, hs):
-    st.subheader("High school → college development")
-    st.caption(
-        "Best-effort linkage of college athletes to their HS marks. "
-        "Confidence-gated; fuzzy name matching means some links are approximate."
-    )
+    section("High school → college development",
+            "How much do runners improve from their high-school marks to college?")
+    explain(
+        "We match college runners to their **high‑school times** (by name) and compare "
+        "paces to measure HS→college improvement. Matching is fuzzy, so read "
+        "individual rows as approximate — the **overall distribution** is the real "
+        "story. Coverage is partial for now and grows as we add more HS data. Use the "
+        "slider to require higher‑confidence matches.")
     conf = st.slider("Minimum link confidence", 0.0, 1.0, 0.6, 0.05)
     h2c = m.hs_to_college(results, hs, min_confidence=conf)
     if h2c.empty:
@@ -891,6 +927,12 @@ def render_national(gender):
     st.caption("Full 32-team national field as context (national teams are "
                "tracked=False and never enter the Ohio ratings/development "
                "analyses). 2020 cancelled.")
+    explain(
+        "This shows how Ohio programs stack up against the **whole country** at the "
+        "NCAA DIII Championships — the 32 teams that qualify each year. It's context "
+        "only: these national opponents are never mixed into the Ohio ratings or "
+        "projections. **All‑Americans** are runners who finish in the top 40 at "
+        "nationals — the individual national honor.")
     frames = get_frames()
     oa = lnational.ohio_at_nationals(frames)
     og = oa[oa["gender"] == gender].copy()
