@@ -12,11 +12,12 @@ import sys
 from d3xc.analyze import project as PJ
 from d3xc.analyze.metrics import load_frames
 
-SPV, QUAL = 6.5, 67.1
+SPV = 6.5
 QUAL_TIME = {"men": "25:27 for 8k", "women": "22:40 for 6k"}
 
 
 def build(team: str, gender: str, prepared_for: str = "") -> str:
+    QUAL = PJ.QUALIFY_VDOT.get(gender, 67.1)
     f = load_frames()
     proj = PJ.project_teams(f, to_year=2029)
     row = proj[(proj.team == team) & (proj.gender == gender)].iloc[0]

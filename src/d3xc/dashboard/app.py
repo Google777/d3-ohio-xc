@@ -880,7 +880,7 @@ def render_scenario(gender):
         st.session_state.pop("scn_team", None)
     team = st.selectbox("Program", teams, index=teams.index(default), key="scn_team")
     row = proj[(proj.team == team) & (proj.gender == gender)].iloc[0]
-    conf, cur_arr, QUALIFY = row["conference"], float(row["arrival_vdot"]), 67.1
+    conf, cur_arr, QUALIFY = row["conference"], float(row["arrival_vdot"]), lproject.QUALIFY_VDOT.get(gender, 67.1)
 
     c1, c2 = st.columns(2)
     dA = c1.slider("🎯 Recruiting — incoming class vs history (VDOT)", -2.0, 8.0, 0.0, 0.5,
@@ -942,7 +942,8 @@ def render_scenario(gender):
 
 def render_coach(gender):
     import pandas as pd
-    SPV, QUAL = 6.5, 67.1                         # sec/5k per point; qualify bar
+    SPV = 6.5                                     # sec/5k per VDOT point
+    QUAL = lproject.QUALIFY_VDOT.get(gender, 67.1)  # gender-specific qualify bar
     qual_time = "25:27 for 8k" if gender == "men" else "22:40 for 6k"
     st.subheader("🏁 Coach Mode — adjust your plan, see what to do")
     st.caption("Plain language, real race times. Slide your recruiting and training "

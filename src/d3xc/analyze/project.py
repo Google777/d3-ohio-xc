@@ -19,6 +19,10 @@ from d3xc.analyze import standardize as SZ
 
 VDOT_PER_5K_SEC = 6.5   # ~1 VDOT point ≈ 6-7 sec over 5k (near D3 range)
 
+# Cross-validated Great Lakes national-qualifying bar, per gender (adjVDOT).
+# Men ≈ 67.1 (top-5 ~25:27/8k), women ≈ 53.9 (top-5 ~22:40/6k).
+QUALIFY_VDOT = {"men": 67.1, "women": 53.9}
+
 
 def _season_vdot_with_class(adf):
     sv = SZ.athlete_season_vdot(adf).sort_values(["athlete_id", "season"])
@@ -143,11 +147,13 @@ def solve_lever(frames, team, gender, target, by_year, *, lever="arrival",
 
 
 def coach_actions(frames, team, gender, *, prep=None, proj=None,
-                  qualify=67.1, to_year=2029):
+                  qualify=None, to_year=2029):
     """Coach-facing prescription: minimal recruiting (arrival adjVDOT) and/or
     development (adjVDOT/yr) to (a) win the conference title (beat the strongest
     rival's projection) by 2028 & 2029, and (b) qualify for nationals by 2029.
     """
+    if qualify is None:
+        qualify = QUALIFY_VDOT.get(gender, 67.1)
     prep = prep or _prep(frames)
     proj = project_teams(frames, to_year=to_year) if proj is None else proj
     row = proj[(proj["team"] == team) & (proj["gender"] == gender)].iloc[0]
