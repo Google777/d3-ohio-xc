@@ -180,19 +180,25 @@ def main():
     genders = sorted(results["gender"].dropna().unique().tolist())
     conferences = sorted(results["conference"].dropna().unique().tolist())
 
-    views = ["Coach Mode", "📖 How it works", "LacTiC (predictive)", "Statistics",
-             "Coaching & Dynamics", "National", "Standardized (VDOT)", "Scenario",
-             "LacTiC Rankings", "Team development", "Most improved", "Conference",
-             "Regional & National", "HS → College"]
+    COACH_VIEWS = ["Coach Mode", "📖 How it works"]
+    ADVANCED_VIEWS = ["LacTiC (predictive)", "Statistics", "Coaching & Dynamics",
+                      "National", "Standardized (VDOT)", "Scenario", "LacTiC Rankings",
+                      "Team development", "Most improved", "Conference",
+                      "Regional & National", "HS → College"]
     qp = st.query_params
-    default_view = qp.get("view", views[0])
-    view_idx = views.index(default_view) if default_view in views else 0
     default_gender = qp.get("gender", genders[0] if genders else None)
     gender_idx = genders.index(default_gender) if default_gender in genders else 0
 
     with st.sidebar:
         st.header("Filters")
         gender = st.radio("Gender", genders, index=gender_idx)
+        show_advanced = st.checkbox(
+            "🔬 Show advanced analytics", value=(qp.get("advanced") == "1"),
+            help="Extra deep-dive views (team ratings, standings, history). "
+                 "Coaches don't need these — Coach Mode has what you need.")
+        views = COACH_VIEWS + (ADVANCED_VIEWS if show_advanced else [])
+        default_view = qp.get("view", views[0])
+        view_idx = views.index(default_view) if default_view in views else 0
         view = st.radio("View", views, index=view_idx)
         conf_filter = st.multiselect("Conferences", conferences, default=conferences)
         window = st.selectbox(

@@ -30,6 +30,7 @@ from streamlit.testing.v1 import AppTest
 view = sys.argv[1]
 at = AppTest.from_file("src/d3xc/dashboard/app.py", default_timeout=60)
 at.query_params["view"] = view
+at.query_params["advanced"] = "1"   # reveal advanced views for the smoke test
 at.run()
 assert not at.exception, [e.value for e in at.exception]
 assert at.title[0].value.startswith("\U0001F3C3")
